@@ -36,6 +36,10 @@ namespace RIPLImportWizard
     {
         public AttributeMapping win2 = new AttributeMapping();
 
+        //public List<RIPLVariables> lstVariables = new List<RIPLVariables>();
+        public List<RIPLVariables> VarDataGridItems { get; set; }
+        public List<ExcelVariables> ExcelVar { get; set; }
+
         public ObservableCollection<string> Types { get; set; }
         public ObservableCollection<InputModelColumns> InputModelCol { get; set; }
         public ObservableCollection<SourceColumns> SourceCol { get; set; }
@@ -163,11 +167,11 @@ namespace RIPLImportWizard
         }
 
 
-        public DataTable GetColumns(string fileName, string sheet)
+        public List<ExcelVariables> GetColumns(string fileName, string sheet)
         {
-            DataTable dtColumns = new DataTable();
-            dtColumns.Columns.Add("Columns", typeof(string));
-
+            //DataTable dtColumns = new DataTable();
+            //dtColumns.Columns.Add("Columns", typeof(string));
+            List<ExcelVariables> lstXcelVar = new List<ExcelVariables>();
             int num = 1;
             Excel.Application excelApp = new Excel.Application();
             Excel.Workbook excelBook = excelApp.Workbooks.Open(fileName.ToString(), 0, true, 5, "", "", true, Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
@@ -197,15 +201,15 @@ namespace RIPLImportWizard
             }
             foreach (var item in list)
             {
-                DataRow row = dtColumns.NewRow();
-                row["Columns"] = item;
-                dtColumns.Rows.Add(row);
+                ExcelVariables item2 = new ExcelVariables();
+                item2.xcelvar = item.ToString();
+                lstXcelVar.Add(item2);
             }
 
             excelBook.Close(true, null, null);
             excelApp.Quit();
 
-            return dtColumns;
+            return lstXcelVar;
         }
         public int GetVarType(string variable)
         {
@@ -622,74 +626,54 @@ namespace RIPLImportWizard
 
         private void cbSourceSheet_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+
             var SourceSheet = sender as ComboBox;
             string selectedSheet = SourceSheet.SelectedItem as string;
             MessageBox.Show(selectedSheet);
 
-            List<RIPLVariables> lstVariables = new List<RIPLVariables>();
-            lstVariables = GetVariables(Selected_Models.SelectedItem.ToString());
+
+            VarDataGridItems = GetVariables(Selected_Models.SelectedItem.ToString());
 
 
             int z = GetModelPositionType(Selected_Models.SelectedItem.ToString());
 
-            DataRow toInsertComp = dt.NewRow();
-            toInsertComp[0] = "Component";
-            toInsertComp[1] = 16;
-            dt.Rows.InsertAt(toInsertComp, 0);
+            RIPLVariables item = new RIPLVariables();
+            item.varname = "Component";
+            item.varID = 100;
+            item.vartype = 16;
+            VarDataGridItems.Add(item);
+
+            RIPLVariables item2 = new RIPLVariables();
+
+            if(z==5)
+            {
+                item2.varname = GetStationingNames(1);
+                item2.varID = 1;
+                item2.vartype = 18;
+                VarDataGridItems.Add(item2);
+                RIPLVariables item3 = new RIPLVariables();
+                item3.varname = GetStationingNames(4);
+                item3.varID = 4;
+                item3.vartype = 18;
+                VarDataGridItems.Add(item3);
+            }
+            else if (z==2)
+            {
+                item2.varname = GetStationingNames(2);
+                item2.varID = 1;
+                item2.vartype = 18;
+                VarDataGridItems.Add(item2);
+            }
+            VarMapping.ItemsSource = VarDataGridItems;
 
            
-            if (z == 5)
-            {
-                DataRow toInsertStation1 = dt.NewRow();
-                toInsertStation1[0] = GetStationingNames(1);
-                toInsertStation1[1] = 18;
-                dt.Rows.InsertAt(toInsertStation1, 1);
-                DataRow toInsertStation2 = dt.NewRow();
-                toInsertStation2[0] = GetStationingNames(4);
-                toInsertStation2[1] = 18;
-                dt.Rows.InsertAt(toInsertStation2, 2);
-            }
-            else if (z == 2)
-            {
-                DataRow toInsertStation = dt.NewRow();
-                toInsertStation[0] = GetStationingNames(2);
-                toInsertStation[1] = 18;
-                dt.Rows.InsertAt(toInsertStation, 1);
-            }
-            VarMapping.DataContext = dt.DefaultView;
             List<InputModelColumns> inputmodelcol = new List<InputModelColumns>();
 
-            foreach (DataRow row in dt.Rows)
-            {
-                string tcol;
-                int x = int.Parse(row[1].ToString());
-                if (x == 16)
-                {
-                    tcol = "Use List Transformation";
-                }
-                else
-                {
-                    tcol = "Use Values From Source Field";
-                }
-
-                inputmodelcol.Add(new InputModelColumns { ModelCol = row[0].ToString(), VarType = GetVarTypeString(x), TransformCol = tcol });
-
-            }
-            VarMapping.ItemsSource = inputmodelcol;
 
             string selectedFile = ((MainWindow)Application.Current.MainWindow).filePath.Text;
 
-            DataTable dtSourceColumns = new DataTable();
-            dtSourceColumns = GetColumns(selectedFile, selectedSheet);
-
-            List<SourceColumns> _sourcecol = new List<SourceColumns>();
-            foreach (DataRow row in dtSourceColumns.Rows)
-            {
-                _sourcecol.Add(new SourceColumns { SourceCol = row[0].ToString() });
-            }
-
-
-            cbMapVars.ItemsSource = _sourcecol;
+            ExcelVar = new List<ExcelVariables>();
+            ExcelVar = GetColumns(selectedFile, selectedSheet);
         }
         //Mapping Components
         private void MapComponents_Loaded(object sender, RoutedEventArgs e)
@@ -802,12 +786,12 @@ namespace RIPLImportWizard
         }
 
         //Attribute Mapping
-        public AttributeMapping win2 = new AttributeMapping();
-        private void AttMapp_Click(object sender, RoutedEventArgs e)
-        {
+        //public AttributeMapping win2 = new AttributeMapping();
+        //private void AttMapp_Click(object sender, RoutedEventArgs e)
+        //{
             
-            win2.Show();
-        }
+        //    win2.Show();
+        //}
         
         public void PassList(List<AttMapList> myList)
         {
@@ -819,19 +803,23 @@ namespace RIPLImportWizard
         {
 
         }
-        public class RIPLVariables
-        {
-            public string varname { get; set; }
-            public override string ToString()
-            {
-                return this.varname;
-            }
-            public int varID { get; set; }
-            public int vartype { get; set; }
-        }
 
     }
+    public class ExcelVariables
+    {
+        public string xcelvar { get; set; }
 
+    }
+    public class RIPLVariables
+    {
+        public string varname { get; set; }
+        public override string ToString()
+        {
+            return this.varname;
+        }
+        public int varID { get; set; }
+        public int vartype { get; set; }
+    }
     public class SourceColumns
     {
         public string SourceCol { get; set; }
@@ -953,17 +941,17 @@ namespace RIPLImportWizard
         //}
         
     }
-    public class Model : INotifyPropertyChanged
+    public class MyVarModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        private object _xcelvar;
-        public object XcelVar
+        private object _varname;
+        public object VarName
         {
-            get { return _xcelvar; }
+            get { return _varname; }
             set
             {
-                _xcelvar = value;
-                this.OnPropertyChanged(new PropertyChangedEventArgs("XcelVar"));
+                _varname = value;
+                this.OnPropertyChanged(new PropertyChangedEventArgs("VarName"));
             }
         }
 

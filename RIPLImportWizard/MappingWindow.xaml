@@ -153,7 +153,8 @@
                             </StackPanel>
                         </Grid>
                     </GroupBox>
-                    <DataGrid x:Name="VarMapping" Grid.Column="2" Grid.RowSpan="2" Grid.ColumnSpan="2" Width ="600" Margin ="0,10,0,0" CanUserResizeColumns="True" AutoGenerateColumns="False" HorizontalAlignment="Left" SelectionChanged="VarMapping_SelectionChanged">
+                    <DataGrid x:Name="VarMapping" Grid.Column="2" Grid.RowSpan="2" Grid.ColumnSpan="2" Width ="600" Margin ="0,10,0,0" CanUserResizeColumns="True" AutoGenerateColumns="False" HorizontalAlignment="Left" SelectionChanged="VarMapping_SelectionChanged" CanUserAddRows="False"
+                              ItemsSource="{Binding VarDataGridItems,RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Window}}">
                         <DataGrid.Columns>
                             <DataGridTextColumn x:Name="ModelColumn" Binding="{Binding ModelCol}" Header="Model Column" Width="120" IsReadOnly="True"/>
                             <DataGridTextColumn x:Name="VarTypeCol" Binding="{Binding VarType}" IsReadOnly="False"/>
@@ -161,7 +162,7 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <ComboBox Name="cbMapVars" SelectedItem="{Binding SelecatedVar, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
-                                      ItemsSource="{Binding XcelVar,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
+                                      ItemsSource="{Binding ExcelVar,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
