@@ -1,0 +1,65 @@
+﻿<Window x:Class="RIPLImportWizard.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RIPLImportWizard"
+        mc:Ignorable="d"
+        Title="RIPL Import Wizard" d:DesignHeight="720" d:DesignWidth="1280" ResizeMode="CanMinimize">
+
+    <Grid>
+  
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="240" />
+            <ColumnDefinition Width="204" />
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="20"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="42"/>
+            <RowDefinition Height="7"/>
+            <RowDefinition Height="65"/>
+            <RowDefinition Height="65"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Frame Name="MainFrame" NavigationUIVisibility="Hidden"/>
+       
+        <!--<Border BorderBrush="AliceBlue" BorderThickness="1" Grid.Column="2" Grid.Row="2" Grid.RowSpan="4" Grid.ColumnSpan="3"/>-->
+        <!--<Border BorderBrush="Black"  BorderThickness="1" Grid.Column="2" Grid.Row="2" Height="40">-->
+        <GroupBox Name ="templateGroup" Grid.Column="2" Grid.Row="2" Header="Template Name">
+            <TextBox Name="templateName" Language="en-US" Margin ="10,10,10,10"/>
+        </GroupBox>
+        <GroupBox Name="sourceGroup" Grid.Column="2" Grid.Row="3" Header="Source Database Type">
+            <ComboBox Name="SourceDatabaseType" Margin="10,10,10,10" FontFamily="Segoe UI">
+                <ComboBoxItem Content="Access (*.mdb)"/>
+                <ComboBoxItem Content="Access (*.accdb)"/>
+                <ComboBoxItem Content="Excel (*.xls)"/>
+                <ComboBoxItem IsSelected="True" Content ="Excel (*.xlsx)"/>
+                <ComboBoxItem Content="SQL Server Database"/>
+            </ComboBox>
+        </GroupBox>
+        <GroupBox Grid.Column="3" Grid.Row="2" Header="File Path">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="30"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Name="filePath" Language="en-US" Margin ="10,10,10,10" Grid.Column="0"/>
+                <Button x:Name="fileSelect" Content="..." Height="20" Width="30" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Click="btn_FileSearch"/>
+            </Grid>
+           
+        </GroupBox>
+        
+        <GroupBox Grid.Column="3" Grid.Row="3" Header="Comments">
+            <TextBox Name="comments" Language="en-US" Margin="10,10,10,10"/>
+        </GroupBox>
+   
+        <Button x:Name="Start" IsEnabled="False" Grid.Column="2" Grid.Row="4" Width="100" Height="40" Margin="20" Click="Button_Click">
+            <Button.Content>
+                <TextBlock TextWrapping="Wrap" Text="Start Import Wizard"/>
+            </Button.Content>
+        </Button>
+    </Grid>
+</Window>

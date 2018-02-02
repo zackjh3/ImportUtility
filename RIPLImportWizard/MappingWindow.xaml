@@ -1,0 +1,242 @@
+﻿<Window x:Class="RIPLImportWizard.MappingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RIPLImportWizard"
+        mc:Ignorable="d"
+        Title="MappingWindow"  d:DesignHeight="600" d:DesignWidth="600" Loaded="MappingWindowLoaded">
+
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TabControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" >
+            <TabControl.Template>
+                <ControlTemplate TargetType="TabControl">
+                    <StackPanel Margin="0,0,-199,0">
+                        <ScrollViewer HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Disabled">
+                            <TabPanel x:Name="HeaderPanel"
+                              Panel.ZIndex ="1" 
+                              KeyboardNavigation.TabIndex="1"
+                              Grid.Column="0"
+                              Grid.Row="0"
+                              Margin="2,2,2,0"
+                              IsItemsHost="true"/>
+                        </ScrollViewer>
+                        <ContentPresenter x:Name="PART_SelectedContentHost"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                          Margin="{TemplateBinding Padding}"
+                                          ContentSource="SelectedContent"/>
+                    </StackPanel>
+                </ControlTemplate>
+            </TabControl.Template>
+            <TabItem Header="Preview Source Tables">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="720"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <GroupBox Header="Available Source Tables" Grid.Column="0" Width="200" HorizontalAlignment="Left" Height="720">
+                        <ListBox Margin ="0,10,0,0" Name="listSheets" SelectedIndex="0" Width="150" Grid.Column="0" SelectionChanged="New_Sheet_Columns">
+                            <!--<ListBox.GroupStyle>
+                            <GroupStyle HeaderTemplate="{StaticResource groupingHeaderTemplate}" />
+                        </ListBox.GroupStyle> ItemsSource="{Binding Source={StaticResource dtSheets}}
+                    -->
+                        </ListBox>
+                    </GroupBox>
+                    <GroupBox Header="Preview Source Table"  Grid.Column="1">
+                        <DataGrid Margin ="0,10,0,0" AutoGenerateColumns="True" IsReadOnly="True" CanUserResizeColumns="True" HorizontalAlignment="Left" Name="dtGrid" VerticalAlignment="Stretch"/>
+                    </GroupBox>
+
+                </Grid>
+            </TabItem>
+
+
+
+
+
+            <TabItem Name="SelectModels">
+                <TabItem.Header>
+                    <Label Content="Select Models" MouseLeftButtonDown="Load_Models" HorizontalAlignment="Stretch"/>
+                </TabItem.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="600"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Filter Available Models:"/>
+                            <TextBox Margin="10,10,10,10" Name="ModelFilter" TextChanged="ModelFilter_TextChanged" Width="350"/>
+                        </StackPanel>
+                        <ListView x:Name ="Input" Height="720" HorizontalAlignment="Left" SelectionChanged="Selector_OnSelectionChanged" Grid.Column="0" SelectionMode="Multiple">
+                            <ListView.View>
+                                <GridView>
+                                    <GridView.Columns>
+                                        <GridViewColumn  Header="Input Model" Width="400" DisplayMemberBinding="{Binding InputModel}"/>
+                                        <GridViewColumn  Header="Use for Import?">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox  Name="UseForImport" IsChecked="{Binding RelativeSource={RelativeSource FindAncestor,
+                    AncestorType={x:Type ListViewItem}}, Path=IsSelected}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView.Columns>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </StackPanel>
+                    <ListView Name ="SourceColumns" Grid.Column="1">
+                        <ListView.View>
+                            <GridView>
+                                <GridView.Columns>
+                                    <GridViewColumn  Header="Source Columns" Width="400"/>
+                                </GridView.Columns>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+
+            </TabItem>
+
+
+
+
+            <TabItem Name="Mapping">
+                <TabItem.Header>
+                    <Label Content="Map Models and Columns" MouseLeftButtonDown="Load_Mapping" HorizontalAlignment="Stretch"/>
+                </TabItem.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="400"/>
+                        <ColumnDefinition Width="300"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <GroupBox Header="Select Model" Grid.Column="0" Grid.Row ="0" Grid.RowSpan="2">
+                        <ListBox x:Name="Selected_Models" Margin="5,10,5,0" SelectionChanged="Selected_Models_SelectionChanged"/>
+                    </GroupBox>
+                    <GroupBox Header="Import Settings" Grid.Column="1" Grid.RowSpan="2">
+                        <Grid>
+                            <StackPanel>
+                                <GroupBox Header="Selected Model" Margin="0,10,0,0">
+                                    <TextBox Name="SelectedModel" Margin="0,10,0,0" Text="{Binding SelectedItem, ElementName=Selected_Models}"/>
+                                </GroupBox>
+                                <GroupBox Header="Import Type">
+                                    <StackPanel Orientation="Vertical" Margin="0,10,0,0">
+                                        <RadioButton Name="Replace" Content="Replace" IsChecked="True">
+                                        </RadioButton>
+                                        <RadioButton Name="Append" Content="Append">
+                                        </RadioButton>
+                                    </StackPanel>
+                                </GroupBox>
+                                <GroupBox Header ="Source Spreadsheet" Margin="0,10,0,0">
+                                    <ComboBox Name="cbSourceSheet" Margin="0,10,0,1" SelectionChanged="cbSourceSheet_SelectionChanged"/>
+                                </GroupBox>
+                                <GroupBox Header="Reference Selection" Margin="0,10,0,10">
+                                    <ComboBox Name="cbReferences" Margin="0,10,0,0" SelectionChanged="cbReferences_SelectionChanged"/>
+                                </GroupBox>
+                            </StackPanel>
+                        </Grid>
+                    </GroupBox>
+                    <DataGrid x:Name="VarMapping" Grid.Column="2" Grid.RowSpan="2" Grid.ColumnSpan="2" Width ="600" Margin ="0,10,0,0" CanUserResizeColumns="True" AutoGenerateColumns="False" HorizontalAlignment="Left" SelectionChanged="VarMapping_SelectionChanged">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn x:Name="ModelColumn" Binding="{Binding ModelCol}" Header="Model Column" Width="120" IsReadOnly="True"/>
+                            <DataGridTextColumn x:Name="VarTypeCol" Binding="{Binding VarType}" IsReadOnly="False"/>
+                            <DataGridTemplateColumn  Header="Variable Attributes" x:Name="xcelAttributes">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox Name="cbMapVars" SelectedItem="{Binding SelecatedVar, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                      ItemsSource="{Binding XcelVar,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!--<DataGridComboBoxColumn x:Name="SourceMapColumns" Header="Source Columns" ItemsSource="{Binding SourceCol}" SelectedItemBinding="{Binding SourceCol}" Width="150" />-->
+                            <DataGridTextColumn x:Name="Transformation" Width="*" Header="Values Mapping Option" Binding="{Binding TransformCol}" IsReadOnly="True" />
+                            <DataGridTemplateColumn x:Name="Map" Header="Attribute Mapping">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="Map?" x:Name="AttMapp" Click="AttMapp_Click" IsEnabled="True" Width="50"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            
+                            
+                            
+                            
+                            <!--<DataGridComboBoxColumn x:Name="Transformation" Header="Values Mapping Option" ItemsSource="{Binding Types}" SelectedItemBinding="{Binding Types}" Width="200" IsReadOnly="False">
+                                -->
+                            <!--<DataGridComboBoxColumn.EditingElementStyle>
+                                    <Style TargetType="{x:Type ComboBox}">
+                                        <EventSetter Event="MouseLeftButtonDown" Handler="Transformation_MouseLeftButtonDown" />
+                                    </Style>
+                                </DataGridComboBoxColumn.EditingElementStyle>-->
+                            <!--
+                            </DataGridComboBoxColumn>-->
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <!--<ListView Name="lst" Grid.Column="3" Grid.RowSpan="2" >
+                        
+                    </ListView>-->
+                    <!--<ListView Height="238" Margin="10,0,0,0" HorizontalAlignment="Left" Name="listView2" VerticalAlignment="Top" Width="503" ItemsSource="{Binding}" IsSynchronizedWithCurrentItem="True" Grid.Column="2">
+                        <ListView.View>
+                            <GridView>
+                                <GridView.Columns>
+                                    <GridViewColumn DisplayMemberBinding="{Binding ID}" Header="Model" Width="150"/>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Name}" Header="Source Table Name" Width="150" />
+                                    <GridViewColumn DisplayMemberBinding="{Binding Name}" Header="Reference" Width="150"/>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Name}" Header="Import Option" Width="150"/>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Name}" Header="Filter (Optional)" Width="150"/>
+                                </GridView.Columns>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>-->
+                </Grid>
+            </TabItem>
+            <TabItem IsEnabled="True">
+                <TabItem.Header>
+                    <Label Content="Map Components" MouseLeftButtonDown="MapComponents_Loaded" HorizontalAlignment="Stretch"/>
+                </TabItem.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="150"/>
+                        <RowDefinition Height="200"/>
+                        <RowDefinition Height="300"/>
+                    </Grid.RowDefinitions>
+                    <Button x:Name="AutoMap" Width="100" Height="50" Grid.Row="0" Content="AutoMap" Click="AutoMap_Click"/>
+
+                    <DataGrid x:Name="Comps" Grid.Row="1" AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn x:Name="SourceComp" Header="Source Components" Width="200" Binding="{Binding sourcecompvar}"/>
+                            <DataGridComboBoxColumn x:Name="RIPLComp" Header="RIPL Component" Width="200" ItemsSource="{Binding component}" SelectedItemBinding="{Binding component}" IsReadOnly="False"/>
+                            <!--<DataGridTemplateColumn x:Name="RIPLComp" Header ="RIPL Component">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox ItemsSource="{Binding component, RelativeSource={RelativeSource AncestorType=Window}}" SelectedValue="{Binding component, UpdateSourceTrigger=PropertyChanged}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>-->
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="View Results" IsEnabled="False">
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

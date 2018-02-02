@@ -1,0 +1,35 @@
+﻿<Window x:Class="RIPLImportWizard.AttributeMapping"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RIPLImportWizard"
+        mc:Ignorable="d"
+        Title="AttributeMapping" Height="300" Width="600">
+    <Grid>
+        <StackPanel>
+            <DataGrid x:Name="AttMap" AutoGenerateColumns="False" CanUserAddRows="False"
+                  ItemsSource="{Binding MyDataGridItems,RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Window}}">
+                <DataGrid.Columns >
+                    <DataGridTextColumn Header="Database Attributes" x:Name="txtAtt"  
+                        Binding="{Binding XcelAtt}" 
+                        Width="0.5*" />
+                    <DataGridTemplateColumn  Header="Variable Attributes" x:Name="xcelAttributes">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox Name="cbAttributes" SelectedItem="{Binding SelectedItem, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                      ItemsSource="{Binding SQLAtt,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                </DataGrid.Columns>
+            </DataGrid>
+            <TextBox>"Hello"</TextBox>
+             <StackPanel Margin="8" Orientation="Horizontal">
+                <Button MinWidth="93" Name="OK" Click="OK_Click">OK</Button>
+                <Button MinWidth="93" Margin="10,0,0,0" Name="Cancel" Click="Cancel_Click">Cancel</Button>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
